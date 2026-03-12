@@ -1,6 +1,13 @@
 defmodule ChatWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :chat
 
+  socket "/", ChatWeb.UserSocket,
+  websocket: [
+    path: "/socket",  # явно указываем путь
+    compress: true
+  ],
+  longpoll: false
+
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
   # Set :encryption_salt if you would also like to encrypt it.
@@ -24,7 +31,7 @@ defmodule ChatWeb.Endpoint do
     at: "/",
     from: :chat,
     gzip: not code_reloading?,
-    only: ChatWeb.static_paths(),
+    only: ~w(assets fonts images favicon.ico robots.txt chat_test.html),
     raise_on_missing_only: code_reloading?
 
   # Code reloading can be explicitly enabled under the

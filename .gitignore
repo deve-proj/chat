@@ -25,4 +25,4 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 chat-*.tar
 
-.elixir_ts/
+.elixir_ls/
