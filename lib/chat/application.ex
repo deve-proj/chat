@@ -8,6 +8,7 @@ defmodule Chat.Application do
     children = [
 
       {Registry, keys: :unique, name: Chat.RoomRegistry},
+      {Registry, keys: :unique, name: Chat.PostRegistry},
       {Phoenix.PubSub, name: Chat.PubSub},
 
       ChatWeb.Endpoint

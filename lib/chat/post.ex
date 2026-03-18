@@ -1,54 +1,48 @@
-defmodule Chat.Room do
+defmodule Chat.Post do
   use GenServer
 
-  def start_link(room_name) do
+  def start_link(post_id) do
 
-    GenServer.start_link(__MODULE__, [], name: via_tuple(room_name))
+    GenServer.start_link(__MODULE__, [], name: via_tuple(post_id))
 
   end
-
 
   @spec join(any(), any()) :: any()
-  def join(room_name, user) do
+  def join(post_id, user) do
 
-    GenServer.call(via_tuple(room_name), {:join, user})
-
-  end
-
-
-  def leave(room_name, user) do
-
-    GenServer.cast(via_tuple(room_name), {:leave, user})
+    GenServer.call(via_tuple(post_id), {:join, user})
 
   end
 
+  def leave(post_id, user) do
 
-  def send_message(room_name, user_id, user_name, message) do
-
-    GenServer.cast(via_tuple(room_name), {:send_message, user_id, user_name, message})
+    GenServer.cast(via_tuple(post_id), {:leave, user})
 
   end
 
+  def send_comment(post_id, user_id, user_name, message) do
 
-  def get_users(room_name) do
+    GenServer.cast(via_tuple(post_id), {:send_comment, user_id, user_name, message})
 
-    GenServer.call(via_tuple(room_name), :get_users)
+  end
+
+  def get_users(post_id) do
+
+    GenServer.call(via_tuple(post_id), :get_users)
 
   end
 
   def init(_) do
 
-    {:ok, %{users: [], messages: []}}
+    {:ok, %{users: [], comments: []}}
 
   end
-
 
   def handle_call({:join, user}, from, state) do
 
     if user in state.users do
 
       {:reply, {:error, :already_exists}, state}
-
 
     else
 
@@ -59,17 +53,11 @@ defmodule Chat.Room do
 
   end
 
-  def handle_call(:get_users, from, state) do
-
-    {:reply, {:ok, state.users}, state}
-
-  end
-
   def handle_cast({:leave, user}, state) do
 
     new_state = %{state | users: List.delete(state.users, user)}
 
-    {:noreply, new_state}
+    {:no_reply, new_state}
 
   end
 
@@ -78,7 +66,7 @@ defmodule Chat.Room do
     new_message = %{user_id: user_id, user_name: user_name, message: message, timestamp: DateTime.utc_now()}
     new_state = %{state | messages: [new_message | state.messages]}
 
-    {:noreply, new_state}
+    {:no_reply, new_state}
 
   end
 
@@ -95,9 +83,9 @@ defmodule Chat.Room do
   end
 
 
-  def via_tuple(room_name) do
+  def via_tuple(post_id) do
 
-    {:via, Registry, {Chat.RoomRegistry, room_name}}
+    {:via, Registry, {Chat.PostRegistry, post_id}}
 
   end
 
