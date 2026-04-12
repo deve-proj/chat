@@ -7,4 +7,4 @@
 
 P.S:
 
-Путь /socket/websocket такой, потому что phoenix клиент на React какого то хера сам дорисовывает /websocket в urlесл его там ещё нет
+Путь /socket/websocket такой, потому что phoenix клиент на React какого то хера сам дорисовывает /websocket в url если его там ещё нет
