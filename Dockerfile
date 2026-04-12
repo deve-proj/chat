@@ -1,4 +1,4 @@
-FROM hexpm/elixir:latest AS builder
+FROM elixir:latest AS builder
 
 RUN apk add --no-cache \
     build-base \
