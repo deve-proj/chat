@@ -1,4 +1,4 @@
-FROM hexpm/elixir:1.19.5-erlang-28.0-alpine-3.22 AS builder
+FROM hexpm/elixir:1.19.2-erlang-27.2.4-alpine-3.21 AS builder
 
 RUN apk add --no-cache \
     build-base \
@@ -22,7 +22,7 @@ RUN mix compile
 RUN mix phx.digest
 RUN mix release --overwrite
 
-FROM alpine:3.22
+FROM alpine:3.21
 
 RUN apk add --no-cache \
     openssl \
