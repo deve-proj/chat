@@ -1,25 +1,11 @@
 import Config
 
-# Force using SSL in production. This also sets the "strict-security-transport" header,
-# known as HSTS. If you have a health check endpoint, you may want to exclude it below.
-# Note `:force_ssl` is required to be set at compile-time.
-config :chat, ChatWeb.Endpoint,
-  force_ssl: [
-    rewrite_on: [:x_forwarded_proto],
-    exclude: [
-      # paths: ["/health"],
-      hosts: ["localhost", "127.0.0.1"]
-    ]
-  ]
-
-# Configure Swoosh API Client
-config :swoosh, api_client: Swoosh.ApiClient.Req
-
-# Disable Swoosh Local Memory Storage
-config :swoosh, local: false
-
-# Do not print debug messages in production
 config :logger, level: :info
 
-# Runtime production configuration, including reading
-# of environment variables, is done on config/runtime.exs.
+config :chat, Chat.Repo,
+  username: System.get_env("DB_USER"),
+  passwword: System.get_env("DB_PASSWORD"),
+  database: System.get_env("DB_NAME"),
+  hostname: System.get_env("DB_HOST"),
+  port: System.get_env("DB_PORT"),
+  pool_size: 10
