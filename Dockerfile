@@ -1,4 +1,4 @@
-FROM hexpm/elixir:1.19.2-erlang-27.2.4-alpine-3.21 AS builder
+FROM hexpm/elixir:latest AS builder
 
 RUN apk add --no-cache \
     build-base \
