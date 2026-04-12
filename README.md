@@ -1,24 +1,10 @@
-Пользователь "vasya"
-         │
-         ├── Вкладка 1 (Chrome)
-         │      └── Socket 1 (WebSocket соединение)
-         │            ├── Channel "room:general"
-         │            └── Channel "room:offtopic"
-         │
-         ├── Вкладка 2 (Chrome)
-         │      └── Socket 2 (WebSocket соединение)
-         │            ├── Channel "room:general"
-         │            └── Channel "room:random"
-         │
-         └── Телефон (Mobile App)
-                └── Socket 3 (WebSocket соединение)
-                      ├── Channel "room:general"
-                      └── Channel "user:123" (личный канал)
+# DEVE Chat Service
 
+Простенький чатик, с базовым WS функционалом: Отравка, чтение, создание комнат.
 
+- REST ручки в lib/chat_web/controllers/room_controller.ex
+- WS в lib/chat_web/endpoint.ex
 
-Personas Famosas
+P.S:
 
-- Maximo Alcocer
-- Desiree Duran
-- Roberto Mamani
+Путь /socket/websocket такой, потому что phoenix клиент на React какого то хера сам дорисовывает /websocket в urlесл его там ещё нет
