@@ -8,7 +8,7 @@
 import Config
 
 config :chat,
-  generators: [timestamp_type: :utc_datetime]
+  generators: [timestamp_type: :utc_datetime], ecto_repos: [Chat.Repo]
 
 # Configure the endpoint
 config :chat, ChatWeb.Endpoint,

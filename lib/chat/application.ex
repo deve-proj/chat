@@ -7,6 +7,7 @@ defmodule Chat.Application do
 
     children = [
 
+      Chat.Repo,
       {Registry, keys: :unique, name: Chat.RoomRegistry},
       {Registry, keys: :unique, name: Chat.PostRegistry},
       {Phoenix.PubSub, name: Chat.PubSub},
@@ -16,12 +17,37 @@ defmodule Chat.Application do
     ]
 
     opts = [strategy: :one_for_one, name: Chat.Supervisor]
-    Supervisor.start_link(children, opts)
+    {:ok, pid} = Supervisor.start_link(children, opts)
+
+    restore_rooms_from_db()
+
+    {:ok, pid}
+
+  end
+
+  defp restore_rooms_from_db do
+
+    rooms = Chat.list_rooms()
+
+    for room <- rooms do
+
+      case Chat.Room.start_link(room.room_name, room.owner_id, room.logo_url, room.id) do
+
+        {:ok, _pid, room_id} ->
+          IO.puts("✅ Restored room: #{room.room_name} (ID: #{room_id})")
+        {:error, {:already_started, _pid}} ->
+          IO.puts("⚠️ Room already running: #{room.room_name}")
+        {:error, error} ->
+          IO.puts("❌ Failed to restore room #{room.room_name}: #{inspect(error)}")
+
+      end
+
+    end
 
   end
 
   @impl true
-  def config_change(changed, new, removed) do
+  def config_change(changed, _new, removed) do
 
     ChatWeb.Endpoint.config_change(changed, removed)
     :ok

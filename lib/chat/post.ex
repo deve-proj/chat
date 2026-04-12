@@ -38,7 +38,7 @@ defmodule Chat.Post do
 
   end
 
-  def handle_call({:join, user}, from, state) do
+  def handle_call({:join, user}, _from, state) do
 
     if user in state.users do
 

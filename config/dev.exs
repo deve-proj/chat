@@ -54,3 +54,11 @@ config :phoenix, :plug_init_mode, :runtime
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
+
+config :chat, Chat.Repo,
+  username: "marcus",
+  passwword: "13241324",
+  database: "deve_chat",
+  hostname: "localhost",
+  port: 5432,
+  pool_size: 10

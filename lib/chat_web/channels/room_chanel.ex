@@ -1,21 +1,26 @@
 defmodule ChatWeb.RoomChannel do
   use Phoenix.Channel
 
-  def join("room:" <> room_name, _payload, socket) do
+  def join("room:" <> room_id, _payload, socket) do
 
-    user = socket.assigns.user_id
+    IO.puts("Connecting...")
 
-    case Chat.Room.join(room_name, user) do
+    user_id = socket.assigns.user_id
+    user_name = socket.assigns.user_name
+
+    case Chat.Room.join(room_id, %{id: user_id, name: user_name}) do
 
       {:ok, users} ->
 
-        socket = assign(socket, :room_name, room_name)
-
+        IO.puts("✅ Monitor PID: #{inspect(self())}")
+        Process.monitor(self())
+        socket = assign(socket, :room_id, room_id)
         {:ok, socket}
 
 
       {:error, reason} ->
 
+        IO.puts("❌ Join failed, reason: #{inspect(reason)}")
         {:error, %{reason: "join failed: #{inspect(reason)}"}}
 
     end
@@ -27,7 +32,7 @@ defmodule ChatWeb.RoomChannel do
 
     IO.puts("Handle some message...")
 
-    room = socket.assigns.room_name
+    room = socket.assigns.room_id
     user_id = socket.assigns.user_id
     user_name = socket.assigns.user_name
 
@@ -35,8 +40,8 @@ defmodule ChatWeb.RoomChannel do
 
     broadcast!(socket, "new_message", %{
 
-      user: user_id,
-      body: "#{user_name} пишет: " <> body,
+      user_id: user_id,
+      body: body,
       timestamp: DateTime.utc_now()
 
     })
@@ -45,5 +50,14 @@ defmodule ChatWeb.RoomChannel do
 
   end
 
+  def handle_info({:DOWN, _ref, :process, _pid, _reason}, socket) do
+
+    IO.puts("Пользователь отключается...")
+    user = socket.assigns.user_id
+    room = socket.assigns.room_id
+    Chat.Room.leave(room, user)
+    {:noreply, socket}
+
+  end
 
 end

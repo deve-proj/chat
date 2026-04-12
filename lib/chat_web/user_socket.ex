@@ -6,6 +6,8 @@ defmodule ChatWeb.UserSocket do
 
   def connect(params, socket, _connect_info) do
 
+    IO.puts("Пытается подключиться...")
+
     user_id = params["user_id"]
     user_name = params["user_name"]
 
