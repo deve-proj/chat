@@ -1,5 +1,7 @@
 import Config
 
+IO.puts(System.get_env("DB_USER"))
+
 config :chat, ChatWeb.Endpoint,
 
   http: [ip: {127, 0, 0, 1}],
@@ -14,9 +16,9 @@ config :logger, :default_formatter, format: "[$level] $message\n"
 config :phoenix, :stacktrace_depth, 20
 
 config :chat, Chat.Repo,
-  username: System.get_env("DB_USER"),
-  passwword: System.get_env("DB_PASSWORD"),
-  database: System.get_env("DB_NAME"),
-  hostname: System.get_env("DB_HOST"),
-  port: System.get_env("DB_PORT"),
+  username: "marcus",
+  password: "13241324",
+  database: "deve_chat",
+  hostname: "localhost",
+  port: 5432,
   pool_size: 10

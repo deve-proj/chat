@@ -3,7 +3,7 @@ defmodule ChatWeb.RoomController do
 
   def get_rooms_by_user_id(conn, params) do
 
-    rooms = Chat.list_rooms_by_user_id(params["user_id"])
+    rooms = Chat.get_rooms_by_user_id(params["user_id"])
 
     json(conn, %{rooms: rooms})
 
@@ -15,6 +15,35 @@ defmodule ChatWeb.RoomController do
 
     json(conn, %{messages: messages})
 
+  end
+
+  def create_new_room(conn, params) do
+
+    name = params["name"]
+    _description = params["description"]
+    user_id = params["user_id"]
+    logo = params["logo"]
+
+    case Chat.Room.start_link(name, user_id, "temp") do
+      {:ok, _pid, room_data} ->
+
+        logo_url = if logo do
+          case Chat.upload_room_logo(room_data.id, logo) do
+
+            {:ok, url} -> url
+            _ -> :ok
+
+          end
+        end
+
+        result = room_data
+        |> Map.put(:logo_url, logo_url)
+
+        json(conn, result)
+
+      {:error, _changeset} ->
+        send_resp(conn, 403, "")
+    end
   end
 
 end

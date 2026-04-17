@@ -70,19 +70,6 @@ defmodule Chat.Post do
 
   end
 
-  def handle_cast(_unknown, state) do
-
-    {:no_reply, state}
-
-  end
-
-  def handle_call(_unknown, _from, state) do
-
-    {:reply, {:error, :unknown_call}, state}
-
-  end
-
-
   def via_tuple(post_id) do
 
     {:via, Registry, {Chat.PostRegistry, post_id}}

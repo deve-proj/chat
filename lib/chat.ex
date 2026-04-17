@@ -6,7 +6,6 @@ defmodule Chat do
   alias Chat.Schemas.Message
   import Ecto.Query
 
-
   def create_room(attrs) do
 
     %Room{}
@@ -27,16 +26,26 @@ defmodule Chat do
 
   end
 
-  def list_rooms_by_user_id(user_id) do
-
+  def get_rooms_by_user_id(user_id) do
     query = from u in Chat.Schemas.User,
       join: r in Chat.Schemas.Room,
       on: u.room_id == r.id,
       where: u.user_id == ^user_id,
-      select: %{id: r.id, name: r.room_name}
+      select: %{
+        id: r.id,
+        name: r.room_name,
+        logo_url: r.logo_url,
+        last_message: fragment(
+          "(SELECT body FROM messages WHERE room_id = ? ORDER BY inserted_at DESC LIMIT 1)",
+          r.id
+        ),
+        last_message_at: fragment(
+          "(SELECT inserted_at FROM messages WHERE room_id = ? ORDER BY inserted_at DESC LIMIT 1)",
+          r.id
+        )
+      }
 
     Repo.all(query)
-
   end
 
   def join_room(attrs) do
@@ -72,6 +81,52 @@ defmodule Chat do
     query = from u in Chat.Schemas.User, where: u.room_id == ^room_id, select: u
 
     Repo.all(query)
+
+  end
+
+  def delete_room(room_id, user_id) do
+
+    query = from r in Chat.Schemas.Room,
+      where: r.id == ^room_id and r.onwer_id == ^user_id
+
+    case Repo.one(query) do
+
+      nil -> {:error, :not_found_or_not_owner}
+      room -> Repo.delete(room)
+
+    end
+
+  end
+
+  def get_user_name_by_id(user_id) do
+
+    query = from u in Chat.Schemas.User, where: u.user_id == ^user_id, select: u.user_name
+
+    Repo.all(query)
+
+  end
+
+  def upload_room_logo(room_id, file \\ nil) do
+
+    key = "#{room_id}/logo/logo.png"
+
+    case File.read(file.path) do
+
+      {:ok, binary} ->
+
+        Chat.Clients.Minio.upload_file(binary, key, file.content_type)
+
+        query = from r in Chat.Schemas.Room, where: r.id == ^room_id, update: [set: [logo_url: ^Chat.Clients.Minio.build_key_url(key)]]
+
+        Repo.update_all(query, [])
+
+        {:ok, Chat.Clients.Minio.build_key_url(key)}
+
+      {:error, _reason} ->
+
+        {:error}
+
+    end
 
   end
 

@@ -19,7 +19,7 @@ defmodule Chat.Room do
 
             {:ok, pid} = GenServer.start_link(__MODULE__, [db_room.id, room_name], name: via_tuple(db_room.id))
 
-            {:ok, pid, db_room.id}
+            {:ok, pid, %{id: db_room.id, name: db_room.room_name, logo_url: db_room.logo_url}}
 
           {:error, changeset} ->
 
@@ -112,7 +112,7 @@ defmodule Chat.Room do
 
   end
 
-  def handle_call(:get_users, from, state) do
+  def handle_call(:get_users, _from, state) do
 
     {:reply, {:ok, state.users}, state}
 
@@ -164,19 +164,6 @@ defmodule Chat.Room do
     end
 
   end
-
-  def handle_cast(_unknown, state) do
-
-    {:no_reply, state}
-
-  end
-
-  def handle_call(_unknown, _from, state) do
-
-    {:reply, {:error, :unknown_call}, state}
-
-  end
-
 
   def via_tuple(room_id) do
 

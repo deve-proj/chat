@@ -1,8 +1,6 @@
 defmodule ChatWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :chat
 
-  plug Corsica, origins: ["http://localhost:5173"], allow_credentials: true, allow_header: :all, max_age: 86400
-
   socket "/", ChatWeb.UserSocket,
   websocket: [
     path: "/socket/websocket",
@@ -46,6 +44,12 @@ defmodule ChatWeb.Endpoint do
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],
     json_decoder: Phoenix.json_library()
+
+  plug Corsica, origins: ["http://localhost:5173", "http://localhost:5174"],
+                allow_credentials: true,
+                allow_headers: :all,
+                max_age: 86400,
+                allow_methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"]
 
   plug Plug.MethodOverride
   plug Plug.Head

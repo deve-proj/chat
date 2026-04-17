@@ -8,13 +8,25 @@ defmodule ChatWeb.Router do
   scope "/api", ChatWeb do
     pipe_through :api
 
-    get "/users/:user_id/rooms", RoomController, :get_rooms_by_user_id
+    get "/rooms/:user_id", RoomController, :get_rooms_by_user_id
   end
 
   scope "/api", ChatWeb do
     pipe_through :api
 
-    get "/users/:user_id/:room_id/messages", RoomController, :get_messages_by_room_id
+    get "/messages/:user_id/:room_id", RoomController, :get_messages_by_room_id
   end
 
+  scope "/api", ChatWeb do
+    pipe_through :api
+
+    post "/rooms", RoomController, :create_new_room
+
+  end
+
+  scope "/api", ChatWeb do
+    pipe_through :api
+
+    get "/messages/:user_id/:room_id/last", RoomController, :get_last_room_message
+  end
 end

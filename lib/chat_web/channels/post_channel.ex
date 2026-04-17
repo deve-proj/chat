@@ -7,7 +7,7 @@ defmodule ChatWeb.PostChannel do
 
     case Chat.Post.join(post_id, user) do
 
-      {:ok, users} ->
+      {:ok, _users} ->
 
         socket = assign(socket, :post_id, post_id)
 
@@ -21,29 +21,29 @@ defmodule ChatWeb.PostChannel do
 
   end
 
-  @spec handle_in(<<_::88>>, map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
-  def handle_in("new_comment", %{"body" => body}, socket) do
+  # @spec handle_in(<<_::88>>, map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
+  # def handle_in("new_comment", %{"body" => body}, socket) do
 
-    IO.puts("Heandle some message...")
+  #   IO.puts("Heandle some message...")
 
-    post_id = socket.assigns.post_id
-    user_id = socket.assigns.user_id
-    user_name = socket.assigns.user_name
+  #   post_id = socket.assigns.post_id
+  #   user_id = socket.assigns.user_id
+  #   user_name = socket.assigns.user_name
 
-    Chat.Post.send_comment(post_id, user_id, user_name, body) do
+  #   Chat.Post.send_comment(post_id, user_id, user_name, body) do
 
-      broadcast!(socket, "new_comment", %{
+  #     broadcast!(socket, "new_comment", %{
 
-        user: user_id,
-        body: "#{user_name} пишет: " <> body,
-        timestamp: DateTime.utc_now()
+  #       user: user_id,
+  #       body: "#{user_name} пишет: " <> body,
+  #       timestamp: DateTime.utc_now()
 
-      })
+  #     })
 
-      {:no_reply, socket}
+  #     {:no_reply, socket}
 
-    end
+  #   end
 
-  end
+  # end
 
 end

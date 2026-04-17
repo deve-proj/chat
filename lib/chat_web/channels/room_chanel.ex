@@ -10,7 +10,7 @@ defmodule ChatWeb.RoomChannel do
 
     case Chat.Room.join(room_id, %{id: user_id, name: user_name}) do
 
-      {:ok, users} ->
+      {:ok, _users} ->
 
         IO.puts("✅ Monitor PID: #{inspect(self())}")
         Process.monitor(self())
