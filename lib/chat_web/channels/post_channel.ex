@@ -3,47 +3,46 @@ defmodule ChatWeb.PostChannel do
 
   def join("post:" <> post_id, _payload, socket) do
 
-    user = socket.assigns.user_id
+    case Registry.lookup(Chat.PostRegistry, post_id) do
 
-    case Chat.Post.join(post_id, user) do
+      [{_pid, _}] ->
 
-      {:ok, _users} ->
+        {:ok, assign(socket, :post_id, post_id)}
 
-        socket = assign(socket, :post_id, post_id)
+      [] ->
 
-        {:ok, socket}
+        case Chat.Post.start_link(post_id) do
 
-      {:error, reason} ->
+          {:ok, _pid} -> {:ok, assign(socket, :post_id, post_id)}
+          {:error, _} -> {:error, %{reason: "cannot start post channel"}}
 
-        {:error, %{reason: "join failed: #{inspect(reason)}"}}
+        end
 
     end
 
   end
 
-  # @spec handle_in(<<_::88>>, map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
-  # def handle_in("new_comment", %{"body" => body}, socket) do
+  @spec handle_in(<<_::88>>, map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
+  @spec handle_in(<<_::88>>, map(), Phoenix.Socket.t()) :: :ok
+  def handle_in("new_comment", %{"body" => body}, socket) do
 
-  #   IO.puts("Heandle some message...")
+    IO.puts("Heandle new comment...")
 
-  #   post_id = socket.assigns.post_id
-  #   user_id = socket.assigns.user_id
-  #   user_name = socket.assigns.user_name
+    post_id = socket.assigns.post_id
+    user_id = socket.assigns.user_id
 
-  #   Chat.Post.send_comment(post_id, user_id, user_name, body) do
+    Chat.Clients.News.send_comment(post_id, user_id, body)
 
-  #     broadcast!(socket, "new_comment", %{
+    broadcast!(socket, "new_comment", %{
 
-  #       user: user_id,
-  #       body: "#{user_name} пишет: " <> body,
-  #       timestamp: DateTime.utc_now()
+      user: user_id,
+      text: body,
+      timestamp: DateTime.utc_now()
 
-  #     })
+    })
 
-  #     {:no_reply, socket}
+    {:noreply, socket}
 
-  #   end
-
-  # end
+  end
 
 end

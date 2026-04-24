@@ -10,6 +10,8 @@ defmodule Chat.Clients.Minio do
 
   end
 
+  @spec upload_file(binary(), binary(), atom() | binary() | [{atom() | binary(), binary()}]) ::
+          any()
   def upload_file(file, path, content_type) do
 
     S3.put_object(@bucket, path, file, [content_type: content_type, acl: :public_read])

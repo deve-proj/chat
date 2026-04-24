@@ -23,8 +23,12 @@ defmodule ChatWeb.RoomController do
     _description = params["description"]
     user_id = params["user_id"]
     logo = params["logo"]
+    type = params["type"]
+    accessability = params["accessability"]
 
-    case Chat.Room.start_link(name, user_id, "temp") do
+    IO.inspect(params)
+
+    case Chat.Room.start_link(name, user_id, "temp", accessability, type) do
       {:ok, _pid, room_data} ->
 
         logo_url = if logo do

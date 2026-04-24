@@ -29,4 +29,5 @@ defmodule ChatWeb.Router do
 
     get "/messages/:user_id/:room_id/last", RoomController, :get_last_room_message
   end
+  
 end

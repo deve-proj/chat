@@ -31,7 +31,7 @@ defmodule Chat.Application do
 
     for room <- rooms do
 
-      case Chat.Room.start_link(room.room_name, room.owner_id, room.logo_url, room.id) do
+      case Chat.Room.start_link(room.room_name, room.owner_id, room.logo_url, room.accessability, room.room_type, room.id) do
 
         {:ok, _pid, room_id} ->
           IO.puts("✅ Restored room: #{room.room_name} (ID: #{room_id})")

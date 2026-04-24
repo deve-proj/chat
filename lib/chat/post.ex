@@ -20,21 +20,15 @@ defmodule Chat.Post do
 
   end
 
-  def send_comment(post_id, user_id, user_name, message) do
-
-    GenServer.cast(via_tuple(post_id), {:send_comment, user_id, user_name, message})
-
-  end
-
   def get_users(post_id) do
 
     GenServer.call(via_tuple(post_id), :get_users)
 
   end
 
-  def init(_) do
+  def init(post_id) do
 
-    {:ok, %{users: [], comments: []}}
+    {:ok, %{post_id: post_id, users: [], comments: []}}
 
   end
 
@@ -56,15 +50,6 @@ defmodule Chat.Post do
   def handle_cast({:leave, user}, state) do
 
     new_state = %{state | users: List.delete(state.users, user)}
-
-    {:no_reply, new_state}
-
-  end
-
-  def handle_cast({:send_message, user_id, user_name, message}, state) do
-
-    new_message = %{user_id: user_id, user_name: user_name, message: message, timestamp: DateTime.utc_now()}
-    new_state = %{state | messages: [new_message | state.messages]}
 
     {:no_reply, new_state}
 

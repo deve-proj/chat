@@ -1,7 +1,7 @@
 defmodule Chat.Room do
   use GenServer
 
-  def start_link(room_name, owner_id, logo_url, room_id \\ nil) do
+  def start_link(room_name, owner_id, logo_url, accessability, room_type, room_id \\ nil) do
 
     case room_id do
 
@@ -12,7 +12,9 @@ defmodule Chat.Room do
         case Chat.create_room(%{
           room_name: room_name,
           owner_id: owner_id,
-          logo_url: logo_url ||  "http://localhost:9000/default.png"
+          logo_url: logo_url ||  "http://localhost:9000/default.png",
+          room_type: room_type,
+          accessability: accessability
         }) do
 
           {:ok, db_room} ->

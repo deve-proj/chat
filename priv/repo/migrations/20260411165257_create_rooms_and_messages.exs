@@ -9,6 +9,8 @@ defmodule Chat.Repo.Migrations.CreateRoomsAndMessages do
       add :room_name, :string, null: false
       add :owner_id, :uuid, null: false
       add :logo_url, :text, null: false
+      add :accessability, :text, null: true # public/private ( only for groups )
+      add :room_type, :text, null: false # group/channel/user
       timestamps()
 
     end
