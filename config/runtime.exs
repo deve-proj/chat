@@ -23,6 +23,7 @@ config :ex_aws, :s3,
   host: env!("S3_HOST"),
   port: env!("S3_PORT")
 
+
 if config_env() == :prod do
   secret_key_base =
     System.get_env("SECRET_KEY_BASE") ||
@@ -33,4 +34,14 @@ if config_env() == :prod do
   config :chat, ChatWeb.Endpoint,
     url: [host: host, port: 4000],
     secret_key_base: secret_key_base
+
+
+  config :chat, Chat.Repo,
+    username: System.get_env("DB_USER"),
+    password: System.get_env("DB_PASSWORD"),
+    database: System.get_env("DB_NAME"),
+    hostname: System.get_env("DB_HOST"),
+    port: System.get_env("DB_PORT"),
+    pool_size: 10,
+    show_sensitive_data_on_connection_error: true
 end
