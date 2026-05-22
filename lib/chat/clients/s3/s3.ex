@@ -1,4 +1,4 @@
-defmodule Chat.Clients.Minio do
+defmodule Chat.Clients.S3 do
   alias ExAws.S3
 
   @bucket "chats"

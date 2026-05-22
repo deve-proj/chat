@@ -119,13 +119,13 @@ defmodule Chat do
 
       {:ok, binary} ->
 
-        Chat.Clients.Minio.upload_file(binary, key, file.content_type)
+        Chat.Clients.S3.upload_file(binary, key, file.content_type)
 
-        query = from r in Chat.Schemas.Room, where: r.id == ^room_id, update: [set: [logo_url: ^Chat.Clients.Minio.build_key_url(key)]]
+        query = from r in Chat.Schemas.Room, where: r.id == ^room_id, update: [set: [logo_url: ^Chat.Clients.S3.build_key_url(key)]]
 
         Repo.update_all(query, [])
 
-        {:ok, Chat.Clients.Minio.build_key_url(key)}
+        {:ok, Chat.Clients.S3.build_key_url(key)}
 
       {:error, _reason} ->
 

@@ -14,14 +14,14 @@ source!([
 ])
 
 config :ex_aws,
-  access_key_id: env!("MINIO_ACCESS_KEY"),
-  secret_access_key: env!("MINIO_SECRET_KEY"),
+  access_key_id: env!("S3_ACCESS_KEY"),
+  secret_access_key: env!("S3_SECRET_KEY"),
   region: "us-east-1"
 
 config :ex_aws, :s3,
-  scheme: env!("MINIO_SCHEME"),
-  host: env!("MINIO_HOST"),
-  port: env!("MINIO_PORT")
+  scheme: env!("S3_SCHEME"),
+  host: env!("S3_HOST"),
+  port: env!("S3_PORT")
 
 if config_env() == :prod do
   secret_key_base =
