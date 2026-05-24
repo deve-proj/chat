@@ -43,7 +43,7 @@ defmodule ChatWeb.RoomChannel do
       user_id: user_id,
       user_name: user_name,
       body: body,
-      timestamp: DateTime.utc_now()
+      inserted_at: DateTime.utc_now()
 
     })
 
