@@ -2,7 +2,7 @@ defmodule ChatWeb.UserSocket do
   use Phoenix.Socket
 
   channel "room:*", ChatWeb.RoomChannel
-  channel "post:*", ChatWeb.PostChannel
+  channel "user:*", ChatWeb.UserChannel
 
   def connect(params, socket, _connect_info) do
 

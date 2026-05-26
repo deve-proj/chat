@@ -10,6 +10,8 @@ defmodule Chat.Schemas.Room do
     field :logo_url, :string
     field :room_type, :string
     field :accessability, :string
+    field :members, {:array, :string}
+
     timestamps()
 
   end
@@ -17,7 +19,7 @@ defmodule Chat.Schemas.Room do
   def changeset(room, attrs) do
 
     room
-    |> cast(attrs, [:room_name, :owner_id, :logo_url, :room_type, :accessability])
+    |> cast(attrs, [:room_name, :owner_id, :logo_url, :room_type, :accessability, :members])
     |> validate_required([:room_name, :owner_id])
 
   end

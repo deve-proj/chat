@@ -1,9 +1,9 @@
-defmodule Chat.Schemas.User do
+defmodule Chat.Schemas.RoomParticipant do
   use Ecto.Schema
   import Ecto.Changeset
 
   @primary_key {:id, :id, autogenerate: true}
-  schema "room_users" do
+  schema "room_participants" do
 
     field :room_id, :binary_id
     field :user_id, :binary_id

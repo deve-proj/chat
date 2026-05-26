@@ -16,9 +16,9 @@ config :logger, :default_formatter, format: "[$level] $message\n"
 config :phoenix, :stacktrace_depth, 20
 
 config :chat, Chat.Repo,
-  username: "marcus",
-  password: "13241324",
+  username: "chat_admin",
+  password: "f3245454h5b34hvfgj325v23",
   database: "deve_chat",
   hostname: "localhost",
-  port: 5432,
+  port: 5433,
   pool_size: 10

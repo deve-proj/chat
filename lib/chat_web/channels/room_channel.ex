@@ -47,6 +47,16 @@ defmodule ChatWeb.RoomChannel do
 
     })
 
+    Chat.get_rooms_members(room)
+    |> Enum.each(fn user ->
+      ChatWeb.Endpoint.broadcast("user:#{user}", "chat_updated", %{
+        room_id: room,
+        last_message: body,
+        last_message_at: DateTime.utc_now(),
+        last_message_user_name: user_name
+      })
+    end)
+
     {:noreply, socket}
 
   end

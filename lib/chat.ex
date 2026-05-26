@@ -2,6 +2,7 @@ defmodule Chat do
 
   alias Chat.Repo
   alias Chat.Schemas.Room
+  alias Chat.Schemas.RoomParticipant
   alias Chat.Schemas.User
   alias Chat.Schemas.Message
   import Ecto.Query
@@ -23,6 +24,17 @@ defmodule Chat do
   def list_rooms do
 
     Repo.all(Room)
+
+  end
+
+  def regist_new_member(room_id, user_id) do
+
+    room = get_room!(room_id)
+    new_members = (room.members || []) ++ [user_id] |> Enum.uniq()
+
+    room
+    |> Room.changeset(%{members: new_members})
+    |> Repo.update()
 
   end
 
@@ -55,10 +67,8 @@ defmodule Chat do
   end
 
   def get_rooms_by_user_id(user_id) do
-    query = from u in Chat.Schemas.User,
-      join: r in Chat.Schemas.Room,
-      on: u.room_id == r.id,
-      where: u.user_id == ^user_id,
+    query = from r in Chat.Schemas.Room,
+      where: ^user_id in r.members,
       select: %{
         id: r.id,
         name: r.room_name,
@@ -81,10 +91,50 @@ defmodule Chat do
     Repo.all(query)
   end
 
-  def join_room(attrs) do
+  def create_user(attrs) do
 
     %User{}
     |> User.changeset(attrs)
+    |> Repo.insert()
+
+  end
+
+  def change_user_status(user_id, status) when status in [:online, :offline] do
+
+    user = Repo.get_by(User, user_id: user_id)
+
+    if user do
+
+      if status == :online do
+
+        user
+        |> User.changeset(%{status: "online"})
+        |> Repo.update()
+
+      else
+
+        user
+        |> User.changeset(%{status: "offline", last_seen_at: DateTime.utc_now()})
+        |> Repo.update()
+
+      end
+
+    else
+
+      {:error, :user_not_found}
+
+    end
+
+  end
+
+  @spec join_room(
+          :invalid
+          | %{optional(:__struct__) => none(), optional(atom() | binary()) => any()}
+        ) :: any()
+  def join_room(attrs) do
+
+    %RoomParticipant{}
+    |> RoomParticipant.changeset(attrs)
     |> Repo.insert()
 
   end
@@ -100,7 +150,7 @@ defmodule Chat do
   def get_messages_by_room_id(room_id, user_id) do
 
     query = from m in Chat.Schemas.Message,
-      join: ru in Chat.Schemas.User,
+      join: ru in Chat.Schemas.RoomParticipant,
       on: ru.room_id == m.room_id and ru.user_id == ^user_id,
       where: m.room_id == ^room_id,
       select: m
@@ -109,9 +159,25 @@ defmodule Chat do
 
   end
 
-  def get_users_by_room_id(room_id) do
+  def get_online_users_by_room_id(room_id) do
 
-    query = from u in Chat.Schemas.User, where: u.room_id == ^room_id, select: u
+    query = from u in Chat.Schemas.RoomParticipant, where: u.room_id == ^room_id, select: u
+
+    Repo.all(query)
+
+  end
+
+  def get_room_name_by_room_id(room_id) do
+
+    query = from r in Chat.Schemas.Room, where: r.id == ^room_id, select: r.name
+
+    Repo.all(query)
+
+  end
+
+  def get_rooms_members(room_id) do
+
+    query = from r in Chat.Schemas.Room, where: r.id == ^room_id, select: r.members
 
     Repo.all(query)
 

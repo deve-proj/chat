@@ -14,7 +14,8 @@ defmodule Chat.Room do
           owner_id: owner_id,
           logo_url: logo_url ||  "http://localhost:9000/default.png",
           room_type: room_type,
-          accessability: accessability
+          accessability: accessability,
+          members: [owner_id]
         }) do
 
           {:ok, db_room} ->
@@ -78,7 +79,7 @@ defmodule Chat.Room do
 
   def init([room_id, room_name]) do
 
-    users = Enum.map(Chat.get_users_by_room_id(room_id), fn u -> %{id: u.user_id, name: u.user_name} end)
+    users = Enum.map(Chat.get_online_users_by_room_id(room_id), fn u -> %{id: u.user_id, name: u.user_name} end)
 
     IO.inspect(users)
 
@@ -102,6 +103,7 @@ defmodule Chat.Room do
         }) do
 
           {:ok, _db_user} ->
+            Chat.regist_new_member(state.room_id, user.id)
             new_state = %{state | users: [user | state.users]}
             {:reply, {:ok, new_state.users}, new_state}
 
@@ -148,20 +150,6 @@ defmodule Chat.Room do
         IO.puts("Failed to save message to database")
         {:noreply, state}
 
-
-    end
-
-  end
-
-  def handle_call({:get_rooms_by_user_id, user_id}, state) do
-
-    if user_id not in state.users do
-
-      {:reply, {:error, "user not found"}}
-
-    else
-
-      {:reply, {:ok, }}
 
     end
 
