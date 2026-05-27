@@ -18,13 +18,16 @@ defmodule ChatWeb.UserChannel do
 
   end
 
-  def handle_info({:chat_updated, room_id, last_message, last_message_at, last_message_user_name}, socket) do
+  def handle_info({:chat_updated, room_name, room_id, type, logo_url, last_message, last_message_at, last_message_user_name}, socket) do
 
     push(socket, "chat_updated", %{
-      room_id: room_id,
+      name: room_name,
+      id: room_id,
+      type: type,
+      logo_url: logo_url,
       last_message: last_message,
       last_message_at: last_message_at,
-      last_message_user_name: last_message_user_name
+      last_message_user_name: last_message_user_name,
     })
 
   end

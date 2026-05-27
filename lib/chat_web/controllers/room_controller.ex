@@ -36,7 +36,7 @@ defmodule ChatWeb.RoomController do
 
     IO.inspect(params)
 
-    case Chat.Room.start_link(name, user_id, "temp", accessability, type) do
+    case Chat.Room.start_link(name, user_id, nil, accessability, type) do
       {:ok, _pid, room_data} ->
 
         logo_url = if logo do
@@ -48,10 +48,17 @@ defmodule ChatWeb.RoomController do
           end
         end
 
-        result = room_data
-        |> Map.put(:logo_url, logo_url)
+        ChatWeb.Endpoint.broadcast("user:#{user_id}", "chat_updated", %{
+          name: room_data.name,
+          logo_url: logo_url,
+          type: room_data.type,
+          id: room_data.id,
+          last_message: nil,
+          last_message_at: nil,
+          last_message_user_name: nil
+        })
 
-        json(conn, result)
+        json(conn, nil)
 
       {:error, _changeset} ->
         send_resp(conn, 403, "")

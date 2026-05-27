@@ -42,14 +42,14 @@ defmodule Chat.Application do
 
     for room <- rooms do
 
-      case Chat.Room.start_link(room.room_name, room.owner_id, room.logo_url, room.accessability, room.room_type, room.id) do
+      case Chat.Room.start_link(room.name, room.owner_id, room.logo_url, room.accessability, room.type, room.id) do
 
         {:ok, _pid, room_id} ->
-          IO.puts("✅ Restored room: #{room.room_name} (ID: #{room_id})")
+          IO.puts("✅ Restored room: #{room.name} (ID: #{room_id})")
         {:error, {:already_started, _pid}} ->
-          IO.puts("⚠️ Room already running: #{room.room_name}")
+          IO.puts("⚠️ Room already running: #{room.name}")
         {:error, error} ->
-          IO.puts("❌ Failed to restore room #{room.room_name}: #{inspect(error)}")
+          IO.puts("❌ Failed to restore room #{room.name}: #{inspect(error)}")
 
       end
 

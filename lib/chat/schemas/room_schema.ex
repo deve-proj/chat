@@ -5,10 +5,10 @@ defmodule Chat.Schemas.Room do
   @primary_key {:id, :binary_id, autogenerate: true}
   schema "rooms" do
 
-    field :room_name, :string
+    field :name, :string
     field :owner_id, :binary_id
     field :logo_url, :string
-    field :room_type, :string
+    field :type, :string
     field :accessability, :string
     field :members, {:array, :string}
 
@@ -19,8 +19,8 @@ defmodule Chat.Schemas.Room do
   def changeset(room, attrs) do
 
     room
-    |> cast(attrs, [:room_name, :owner_id, :logo_url, :room_type, :accessability, :members])
-    |> validate_required([:room_name, :owner_id])
+    |> cast(attrs, [:name, :owner_id, :logo_url, :type, :accessability, :members])
+    |> validate_required([:name, :owner_id])
 
   end
 

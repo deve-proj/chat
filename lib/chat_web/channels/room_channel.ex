@@ -13,7 +13,6 @@ defmodule ChatWeb.RoomChannel do
       {:ok, _users} ->
 
         IO.puts("✅ Monitor PID: #{inspect(self())}")
-        Process.monitor(self())
         socket = assign(socket, :room_id, room_id)
         {:ok, socket}
 
@@ -24,6 +23,17 @@ defmodule ChatWeb.RoomChannel do
         {:error, %{reason: "join failed: #{inspect(reason)}"}}
 
     end
+
+  end
+
+  def terminate(_reason, socket) do
+
+    IO.puts("Пользователь отключается...")
+    user = socket.assigns.user_id
+    room = socket.assigns.room_id
+    Chat.Room.leave(room, user)
+
+    :ok
 
   end
 
@@ -51,22 +61,15 @@ defmodule ChatWeb.RoomChannel do
     |> Enum.each(fn user ->
       ChatWeb.Endpoint.broadcast("user:#{user}", "chat_updated", %{
         room_id: room,
+        room_name: nil,
+        logo_url: nil,
+        type: nil,
         last_message: body,
         last_message_at: DateTime.utc_now(),
         last_message_user_name: user_name
       })
     end)
 
-    {:noreply, socket}
-
-  end
-
-  def handle_info({:DOWN, _ref, :process, _pid, _reason}, socket) do
-
-    IO.puts("Пользователь отключается...")
-    user = socket.assigns.user_id
-    room = socket.assigns.room_id
-    Chat.Room.leave(room, user)
     {:noreply, socket}
 
   end

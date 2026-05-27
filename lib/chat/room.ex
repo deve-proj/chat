@@ -1,7 +1,7 @@
 defmodule Chat.Room do
   use GenServer
 
-  def start_link(room_name, owner_id, logo_url, accessability, room_type, room_id \\ nil) do
+  def start_link(room_name, owner_id, logo_url \\ nil, accessability, room_type, room_id \\ nil) do
 
     case room_id do
 
@@ -10,10 +10,10 @@ defmodule Chat.Room do
         IO.puts("Создаём новую комнату...")
 
         case Chat.create_room(%{
-          room_name: room_name,
+          name: room_name,
           owner_id: owner_id,
-          logo_url: logo_url ||  "http://localhost:9000/default.png",
-          room_type: room_type,
+          logo_url: logo_url,
+          type: room_type,
           accessability: accessability,
           members: [owner_id]
         }) do
@@ -22,7 +22,7 @@ defmodule Chat.Room do
 
             {:ok, pid} = GenServer.start_link(__MODULE__, [db_room.id, room_name], name: via_tuple(db_room.id))
 
-            {:ok, pid, %{id: db_room.id, name: db_room.room_name, logo_url: db_room.logo_url}}
+            {:ok, pid, db_room}
 
           {:error, changeset} ->
 
@@ -123,6 +123,8 @@ defmodule Chat.Room do
   end
 
   def handle_cast({:leave, user}, state) do
+
+    Chat.leave_room(state.room_id, user)
 
     new_state = %{state | users: List.delete(state.users, user)}
 

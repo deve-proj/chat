@@ -6,11 +6,11 @@ defmodule Chat.Repo.Migrations.CreateRoomsAndMessages do
     create table(:rooms, primary_key: false) do
 
       add :id, :uuid, primary_key: true
-      add :room_name, :string, null: false
+      add :name, :string, null: false
       add :owner_id, :uuid, null: false
-      add :logo_url, :text, null: false
+      add :logo_url, :text, null: true
       add :accessability, :text, null: true
-      add :room_type, :text, null: false
+      add :type, :text, null: false
       add :members, {:array, :text}, null: false
       timestamps()
 

@@ -45,8 +45,8 @@ defmodule Chat do
       limit: ^amount,
       select: %{
         id: r.id,
-        name: r.room_name,
-        type: r.room_type,
+        name: r.name,
+        type: r.type,
         logo_url: r.logo_url,
         last_message: fragment(
           "(SELECT body FROM messages WHERE room_id = ? ORDER BY inserted_at DESC LIMIT 1)",
@@ -71,8 +71,8 @@ defmodule Chat do
       where: ^user_id in r.members,
       select: %{
         id: r.id,
-        name: r.room_name,
-        type: r.room_type,
+        name: r.name,
+        type: r.type,
         logo_url: r.logo_url,
         last_message: fragment(
           "(SELECT body FROM messages WHERE room_id = ? ORDER BY inserted_at DESC LIMIT 1)",
@@ -150,9 +150,9 @@ defmodule Chat do
   def get_messages_by_room_id(room_id, user_id) do
 
     query = from m in Chat.Schemas.Message,
-      join: ru in Chat.Schemas.RoomParticipant,
-      on: ru.room_id == m.room_id and ru.user_id == ^user_id,
-      where: m.room_id == ^room_id,
+      join: r in Chat.Schemas.Room,
+      on: m.room_id == r.id,
+      where: m.room_id == ^room_id and ^user_id in r.members,
       select: m
 
     Repo.all(query)
@@ -161,9 +161,20 @@ defmodule Chat do
 
   def get_online_users_by_room_id(room_id) do
 
-    query = from u in Chat.Schemas.RoomParticipant, where: u.room_id == ^room_id, select: u
+    query = from u in Chat.Schemas.RoomParticipant,
+    where: u.room_id == ^room_id,
+    select: u
 
     Repo.all(query)
+
+  end
+
+  def leave_room(room_id, user_id) do
+
+    query = from u in Chat.Schemas.RoomParticipant,
+    where: u.room_id == ^room_id and u.user_id == ^user_id
+
+    Repo.delete_all(query)
 
   end
 
